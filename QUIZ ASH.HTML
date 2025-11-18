@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pink Quiz App</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 30px;
+      color: #444;
+    }
+
+    h1 {
+      color: #ff4da6;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px #ffcce6;
+    }
+
+    .quiz-box {
+      width: 350px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(255, 102, 153, 0.3);
+      border: 2px solid #ffb3d9;
+    }
+
+    .question {
+      display: none;
+      margin-bottom: 20px;
+      background: #ffe6f2;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ffb3d9;
+    }
+
+    .btn {
+      background: #ff4da6;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 10px;
+      width: 100%;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #ff1a8c;
+    }
+
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #ff1a8c;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>💗 Pink Dynamic Quiz App 💗</h1>
+
+<div class="quiz-box">
+
+  <button id="startBtn" class="btn">Start Quiz</button>
+
+  <div id="quiz">
+
+    <div class="question" id="q1">
+      <p><strong>1. What does HTML stand for?</strong></p>
+      <input type="radio" name="q1" value="0"> Hyperlinks and Text Markup Language <br>
+      <input type="radio" name="q1" value="1"> HyperText Markup Language <br>
+    </div>
+
+    <div class="question" id="q2">
+      <p><strong>2. What does CSS control?</strong></p>
+      <input type="radio" name="q2" value="1"> Design/Style <br>
+      <input type="radio" name="q2" value="0"> Database <br>
+    </div>
+
+    <div class="question" id="q3">
+      <p><strong>3. What language is used for interactivity?</strong></p>
+      <input type="radio" name="q3" value="0"> HTML <br>
+      <input type="radio" name="q3" value="1"> JavaScript <br>
+    </div>
+
+  </div>
+
+  <button id="submitBtn" class="btn" style="display:none;">Submit Quiz</button>
+
+  <p id="result"></p>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
