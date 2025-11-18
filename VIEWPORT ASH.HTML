@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Code Bingo 🎯 — Pink Theme</title>
+<style>
+  :root{
+    --bg:#fff0f6;
+    --card:#ffffff;
+    --accent:#ff4da6;
+    --accent-2:#ffb3d9;
+    --accent-dark:#ff1a8c;
+    --text:#2b2b2b;
+    --muted:#8a8a8a;
+    --success:#2fb86f;
+    --cell-size:calc(76vmin / 5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(180deg,var(--bg),#ffe6f2);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    color:var(--text);
+  }
+
+  .app {
+    width:100%;
+    max-width:1100px;
+    text-align:center;
+  }
+
+  header{
+    margin-bottom:10px;
+  }
+  h1{
+    margin:0;
+    font-size:28px;
+    color:var(--accent-dark);
+    letter-spacing:0.2px;
+  }
+  p.lead{margin:6px 0 18px;color:var(--muted)}
+
+  .controls {
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+
+  .btn {
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    box-shadow:0 6px 18px rgba(255,77,166,0.18);
+    transition:transform .12s ease, background .12s ease, opacity .12s ease;
+    user-select:none;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn.secondary{
+    background:#fff;
+    color:var(--accent-dark);
+    border:2px solid var(--accent-2);
+    box-shadow:none;
+  }
+  .btn.ghost{
+    background:transparent;
+    border:2px dashed rgba(255,77,166,0.12);
+    color:var(--accent-dark);
+  }
+
+  .layout{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .card {
+    background:var(--card);
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 8px 28px rgba(0,0,0,0.06);
+    border:2px solid rgba(255,179,217,0.22);
+  }
+
+  /* board */
+  .board {
+    width:430px;
+    height:430px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    grid-template-rows:repeat(5,1fr);
+    gap:8px;
+  }
+
+  .cell {
+    background:linear-gradient(180deg,#fff,#fff0f6);
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8px;
+    font-weight:700;
+    font-size:14px;
+    color:var(--accent-dark);
+    border:2px solid rgba(255,179,217,0.12);
+    cursor:pointer;
+    position:relative;
+    user-select:none;
+    transition: transform .08s ease, box-shadow .12s ease, background .12s ease;
+  }
+
+  .cell:hover{ transform: translateY(-4px); box-shadow:0 12px 30px rgba(255,77,166,0.06) }
+
+  .cell.marked{
+    background:linear-gradient(135deg,#ffb3d9,#ff4da6);
+    color:white;
+    box-shadow:0 8px 30px rgba(255,77,166,0.18);
+    transform:none;
+  }
+
+  .cell.free {
+    background:linear-gradient(90deg,#fff8fb,#ffe6f2);
+    border:2px dashed rgba(255,77,166,0.14);
+    font-size:12px;
+    color:var(--accent-dark);
+  }
+
+  .cell .term {
+    line-height:1.1;
+    padding:6px;
+  }
+
+  .badge {
+    position:absolute;
+    top:6px;
+    right:6px;
+    background:rgba(255,255,255,0.85);
+    padding:4px 7px;
+    border-radius:10px;
+    font-size:11px;
+    color:var(--accent-dark);
+    border:1px solid rgba(255,77,166,0.06);
+  }
+
+  /* side panel */
+  .side {
+    width:290px;
+    text-align:left;
+  }
+  .called {
+    min-height:160px;
+    max-height:260px;
+    overflow:auto;
+    background:linear-gradient(180deg,#fff,#fff8fb);
+    border-radius:10px;
+    padding:10px;
+    border:1px solid rgba(255,179,217,0.12);
+  }
+  .called .term-item{
+    padding:6px 8px;
+    border-radius:8px;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    font-weight:600;
+    color:var(--accent-dark);
+  }
+  .called .term-item span{opacity:.9}
+  .called .term-item .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 4px 12px rgba(255,77,166,0.12);
+  }
+
+  .status {
+    margin-top:12px;
+    text-align:center;
+    font-weight:800;
+  }
+
+  .victory {
+    margin-top:12px;
+    background:linear-gradient(90deg,#ffdaef,#ffd4ea);
+    color:var(--accent-dark);
+    padding:12px;
+    border-radius:10px;
+    border:2px solid rgba(255,77,166,0.12);
+    display:none;
+    font-size:16px;
+  }
+
+  footer.note{ margin-top:16px; color:var(--muted); font-size:13px; }
+
+  /* responsive */
+  @media (max-width:920px){
+    .layout { flex-direction:column; align-items:center }
+    .side { width:100%; max-width:430px }
+    .board { width:360px; height:360px; }
+  }
+
+  @media (max-width:420px){
+    .board { width:320px; height:320px; gap:6px }
+    .cell { font-size:12px }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Code Bingo 🎯</h1>
+      <p class="lead">Mark coding terms, draw random words, and get a Bingo! (Pink theme)</p>
+    </header>
+
+    <div class="controls">
+      <button id="drawBtn" class="btn">Draw Term</button>
+      <button id="resetMarksBtn" class="btn secondary">Reset Marks</button>
+      <button id="newBoardBtn" class="btn ghost">New Board</button>
+    </div>
+
+    <div class="layout">
+      <div class="card" aria-label="Bingo board">
+        <div id="board" class="board" role="grid"></div>
+        <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
+          <div style="font-size:13px; color:var(--muted)">Click a cell to mark/unmark • Center is FREE</div>
+        </div>
+      </div>
+
+      <div class="card side" aria-label="Controls and called terms">
+        <h3 style="margin:0 0 10px 0; color:var(--accent-dark)">Called Terms</h3>
+        <div id="called" class="called" aria-live="polite"></div>
+
+        <div class="status">
+          <div id="lastDrawn" style="font-weight:700; color:var(--accent-dark)">No draws yet</div>
+        </div>
+
+        <div id="victory" class="victory">BINGO! 🎉 You got a line!</div>
+
+        <footer class="note">Auto-marks any squares that match a drawn term.</footer>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // coding terms bank (more terms to randomize)
+  const TERMS = [
+    "HTML", "CSS", "JavaScript", "Python", "Java",
+    "C++", "SQL", "React", "Angular", "Vue",
+    "Node.js", "API", "JSON", "DOM", "Git",
+    "GitHub", "Bootstrap", "Sass", "TypeScript", "Ajax",
+    "HTTP", "OOP", "Function", "Variable", "Array",
+    "Loop", "Conditional", "Promise", "Async/Await", "Regex",
+    "Class", "Constructor", "Interface", "Component", "State",
+    "Props", "Callback", "Event", "Closure", "Module",
+    "Package", "Compiler", "Interpreter", "Algorithm", "Data Structure",
+    "Binary", "Stack", "Queue", "Linked List", "Hash Table"
+  ];
+
+  // state
+  let boardTerms = [];     // 25 terms in board order
+  let calledTerms = [];    // terms that have been drawn
+  let availableDraws = []; // pool of terms that can be drawn
+
+  // elements
+  const boardEl = document.getElementById('board');
+  const calledEl = document.getElementById('called');
+  const drawBtn = document.getElementById('drawBtn');
+  const resetMarksBtn = document.getElementById('resetMarksBtn');
+  const newBoardBtn = document.getElementById('newBoardBtn');
+  const lastDrawnEl = document.getElementById('lastDrawn');
+  const victoryEl = document.getElementById('victory');
+
+  // helpers
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function createBoard(){
+    boardEl.innerHTML = '';
+    // choose 24 random terms (center is FREE)
+    const pool = shuffle(TERMS).slice(0); // copy
+    // ensure at least 24 available
+    if(pool.length < 24) throw new Error("Not enough terms");
+    const selected = pool.slice(0,24);
+    // inject FREE at center (index 12)
+    boardTerms = [];
+    let k = 0;
+    for(let i=0;i<25;i++){
+      if(i===12) { boardTerms.push("FREE"); }
+      else { boardTerms.push(selected[k++]); }
+    }
+
+    // render
+    for(let i=0;i<25;i++){
+      const term = boardTerms[i];
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (i===12 ? ' free marked' : '');
+      cell.setAttribute('role','gridcell');
+      cell.setAttribute('data-index', i);
+      cell.setAttribute('data-term', term);
+      // content
+      const inner = document.createElement('div');
+      inner.className = 'term';
+      inner.textContent = term;
+      cell.appendChild(inner);
+
+      // badge (row/col indicator optional)
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.innerText = (i+1);
+      badge.style.opacity = 0.08;
+      cell.appendChild(badge);
+
+      // click handler to toggle mark
+      cell.addEventListener('click', () => {
+        toggleMark(i);
+      });
+
+      boardEl.appendChild(cell);
+    }
+
+    // reset called/draws
+    calledTerms = [];
+    availableDraws = shuffle(TERMS.slice(0)); // all terms available to draw
+    // ensure FREE term not in draws if equal "FREE" (our terms don't include FREE)
+    renderCalled();
+    lastDrawnEl.textContent = "No draws yet";
+    victoryEl.style.display = 'none';
+  }
+
+  function toggleMark(index){
+    const cell = boardEl.querySelector([data-index="${index}"]);
+    if(!cell) return;
+    // toggle except center (center is free but still can toggle if user wants - we keep it marked)
+    if(index===12) return; // keep center always marked
+    cell.classList.toggle('marked');
+    checkVictory();
+  }
+
+  function renderCalled(){
+    calledEl.innerHTML = '';
+    if(calledTerms.length===0){
+      calledEl.innerHTML = '<div style="color:var(--muted); padding:6px">No terms drawn yet</div>';
+      return;
+    }
+    calledTerms.slice().reverse().forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'term-item';
+      const txt = document.createElement('span');
+      txt.textContent = t;
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      item.appendChild(txt);
+      item.appendChild(dot);
+      calledEl.appendChild(item);
+    });
+  }
+
+  function drawTerm(){
+    if(availableDraws.length===0){
+      lastDrawnEl.textContent = "No more terms to draw";
+      return;
+    }
+    // pick first from availableDraws (already shuffled)
+    const term = availableDraws.shift();
+    calledTerms.push(term);
+    lastDrawnEl.textContent = "Last draw: " + term;
+    // auto-mark any cells that match the drawn term (case-insensitive)
+    markCellsByTerm(term);
+    renderCalled();
+    checkVictory();
+  }
+
+  function markCellsByTerm(term){
+    const norm = term.toLowerCase();
+    const cells = boardEl.querySelectorAll('.cell');
+    cells.forEach(c => {
+      const t = c.dataset.term || '';
+      if(t.toLowerCase() === norm){
+        if(!c.classList.contains('marked')){
+          c.classList.add('marked');
+          // slight pulse animation
+          c.animate([
+            { transform: 'scale(1.04)' },
+            { transform: 'scale(1)' }
+          ], { duration: 220, easing: 'ease-out' });
+        }
+      }
+    });
+  }
+
+  function resetMarks(){
+    const cells = boardEl.querySelectorAll('.cell');
+    cells.forEach((c,i) => {
+      c.classList.remove('marked');
+      if(i===12) c.classList.add('marked'); // center free remains marked
+    });
+    victoryEl.style.display = 'none';
+  }
+
+  // win detection
+  function checkVictory(){
+    // build 5x5 boolean matrix marked?
+    const marked = [];
+    for(let i=0;i<25;i++){
+      const c = boardEl.querySelector([data-index="${i}"]);
+      marked.push(c && c.classList.contains('marked'));
+    }
+
+    const N = 5;
+    let bingo = false;
+    // rows
+    for(let r=0;r<N;r++){
+      let ok = true;
+      for(let c=0;c<N;c++){
+        if(!marked[r*N + c]) { ok=false; break; }
+      }
+      if(ok) bingo = true;
+    }
+    // cols
+    for(let c=0;c<N;c++){
+      let ok = true;
+      for(let r=0;r<N;r++){
+        if(!marked[r*N + c]) { ok=false; break; }
+      }
+      if(ok) bingo = true;
+    }
+    // diag TL-BR
+    let ok1=true;
+    for(let i=0;i<N;i++){
+      if(!marked[i*N + i]) { ok1=false; break; }
+    }
+    if(ok1) bingo = true;
+    // diag TR-BL
+    let ok2=true;
+    for(let i=0;i<N;i++){
+      if(!marked[i*N + (N-1-i)]) { ok2=false; break; }
+    }
+    if(ok2) bingo = true;
+
+    if(bingo){
+      victoryEl.style.display = 'block';
+      // small confetti-like flash on board cells of the winning lines (optional: highlight all marked)
+      boardEl.querySelectorAll('.cell.marked').forEach((c,i) => {
+        c.animate([
+          { boxShadow:'0 8px 30px rgba(255,77,166,0.06)'},
+          { boxShadow:'0 12px 40px rgba(255,77,166,0.22)'}
+        ], { duration: 600, direction:'alternate', iterations: 2 });
+      });
+    } else {
+      victoryEl.style.display = 'none';
+    }
+    return bingo;
+  }
+
+  // new board: reshuffle board terms and clear marks/called
+  function newBoard(){
+    createBoard();
+  }
+
+  // init events
+  drawBtn.addEventListener('click', drawTerm);
+  resetMarksBtn.addEventListener('click', () => { resetMarks(); });
+  newBoardBtn.addEventListener('click', () => { newBoard(); });
+
+  // allow clicking called list to mark/unmark board cells with that term
+  calledEl.addEventListener('click', (ev) => {
+    const tgt = ev.target.closest('.term-item');
+    if(!tgt) return;
+    const term = tgt.querySelector('span').textContent;
+    // toggle cells with that term
+    const cells = boardEl.querySelectorAll('.cell');
+    cells.forEach(c => {
+      if(c.dataset.term.toLowerCase() === term.toLowerCase()){
+        if(c.classList.contains('marked')) c.classList.remove('marked');
+        else c.classList.add('marked');
+      }
+    });
+    checkVictory();
+  });
+
+  // keyboard shortcut: D to draw, N for new board, R to reset marks
+  document.addEventListener('keydown', (ev) => {
+    if(ev.key === 'd' || ev.key === 'D') drawTerm();
+    if(ev.key==='n' || ev.key==='N') newBoard();
+    if(ev.key==='r' || ev.key==='R') resetMarks();
+  });
+
+  // initial load
+  createBoard();
+
+})();
+</script>
+</body>
+</html>
